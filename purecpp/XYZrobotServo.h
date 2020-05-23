@@ -2,11 +2,7 @@
 
 #pragma once
 
-// #include <Arduino.h>
-#include <inttypes.h>
-#include <memory>
-
-#include "Stream.h"
+#include <Arduino.h>
 
 /// The possible communication errors that can happen when reading the
 /// acknowledgment packet from a servo.
