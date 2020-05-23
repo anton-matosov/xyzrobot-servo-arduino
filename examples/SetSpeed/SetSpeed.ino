@@ -9,27 +9,24 @@
 
 #include <XYZrobotServo.h>
 
-// On boards with a hardware serial port available for use, use
-// that port. For other boards, create a SoftwareSerial object
-// using pin 10 to receive (RX) and pin 11 to transmit (TX).
-#ifdef SERIAL_PORT_HARDWARE_OPEN
-#define servoSerial SERIAL_PORT_HARDWARE_OPEN
-#else
-#include <SoftwareSerial.h>
-SoftwareSerial servoSerial(10, 11);
-#endif
+#define servoSerial Serial1
 
-// Set up a servo object, specifying what serial port to use and
-// what ID number to use.
-//
-// WARNING: Only change the ID number below to a servo that can
-// rotate freely without damaging anything.
-XYZrobotServo servo(servoSerial, 128);
+const uint8_t servoId = 5;
+
+XYZrobotServo servo(servoSerial, servoId);
 
 void setup()
 {
+  Serial.begin(115200); // console output
+  
+
   // Turn on the serial port and set its baud rate.
   servoSerial.begin(115200);
+  servoSerial.setTimeout(20);
+
+  // To receive data, a pull-up is needed on the RX line because
+  // the servos do not pull the line high while idle.
+  pinMode(DDD2, INPUT_PULLUP);  
 }
 
 void loop()

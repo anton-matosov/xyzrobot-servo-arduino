@@ -3,38 +3,24 @@
 
 #include <XYZrobotServo.h>
 
-// On boards with a hardware serial port available for use, use
-// that port. For other boards, create a SoftwareSerial object
-// using pin 10 to receive (RX) and pin 11 to transmit (TX).
-#ifdef SERIAL_PORT_HARDWARE_OPEN
-#define servoSerial SERIAL_PORT_HARDWARE_OPEN
-#else
-#include <SoftwareSerial.h>
-SoftwareSerial servoSerial(10, 11);
-#endif
+#define servoSerial Serial1
 
-const uint8_t servoId = 1;
+const uint8_t servoId = 5;
 
 XYZrobotServo servo(servoSerial, servoId);
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(115200); // console output
+  
 
   // Turn on the serial port and set its baud rate.
   servoSerial.begin(115200);
   servoSerial.setTimeout(20);
 
   // To receive data, a pull-up is needed on the RX line because
-  // the servos do not pull the line high while idle.  If you are
-  // using SoftwareSerial, the pull-up is probably enabled
-  // already.  If you are using the hardware serial port on an
-  // ATmega32U4-based board, we know the RX pin must be pin 0 so
-  // we enable its pull-up here.  For other cases, you should add
-  // code below to enable the pull-up on your board's RX line.
-#if defined(SERIAL_PORT_HARDWARE_OPEN) && defined(__AVR_ATmega32U4__)
-  pinMode(0, INPUT_PULLUP);
-#endif
+  // the servos do not pull the line high while idle.
+  pinMode(DDD2, INPUT_PULLUP);  
 }
 
 void readEverything(XYZrobotServo & servo)
