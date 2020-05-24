@@ -8,11 +8,16 @@
 #include <thread>
 // #define servoSerial Serial1
 
-const uint8_t servoId = 5;
 
-UnixSerial servoSerial("/dev/cu.SLAB_USBtoUART");
+UnixSerial servoSerial("/dev/ttySC0");
 
-XYZrobotServo servo(servoSerial, servoId);
+XYZrobotServo servo6(servoSerial, 6);
+XYZrobotServo servo12(servoSerial, 12);
+XYZrobotServo servo18(servoSerial, 18);
+
+XYZrobotServo servo5(servoSerial, 5);
+XYZrobotServo servo11(servoSerial, 11);
+XYZrobotServo servo17(servoSerial, 17);
 
 void setup()
 {
@@ -300,7 +305,7 @@ void readEverything(XYZrobotServo & servo)
   std::cout << "\n";
 }
 
-void readLoop()
+void readLoop(XYZrobotServo& servo)
 {
   using namespace std::chrono_literals;
 
@@ -311,56 +316,36 @@ void readLoop()
 
 const uint8_t playtime = 75;
 
-const int Min_Position = 23;
-const int Max_Position = 1000;
+const int Min_Position = 400;
+const int Max_Position = 600;
 
-int pos = 0; //(Max_Position - Min_Position) / 2;
+int pos = (Max_Position + Min_Position) / 2;
 
-void setPos()
+void setPos(XYZrobotServo& servo)
 {
   using namespace std::chrono_literals;
 
-//   std::this_thread::sleep_for(2s);
-
-//  if (pos == Max_Position) {
-//    pos = Min_Position;
-//    servo.setPosition(pos, 0);
-//    delay(1000);
-//  } else {
-//    pos = Max_Position;
-//    servo.setPosition(pos, 0);
-//    delay(1000);
-//  }
-
-
-/////////////////////////////////////////////
-//  pos = rand() % Max_Position;
-//  Serial.print(F("\nSetting pos "));
-//  Serial.print(pos);
-//  servo.setPosition(pos, 5);
-//  delay(50);
-
 /////////////////////////////////////////////
   if (pos > Max_Position) {
-    std::this_thread::sleep_for(200ms);
+    std::this_thread::sleep_for(50ms);
     pos = Min_Position;
 
     // readCustomStatus(servo);
-    std::cout << "Setting pos " << pos << "\n";
+    std::cout << "1. Setting pos " << std::dec << pos << "\n";
     servo.setPosition(pos, 0);
     
-    readCustomStatus(servo);
-    std::this_thread::sleep_for(1000ms);
+    // readCustomStatus(servo);
+    std::this_thread::sleep_for(50ms);
   }
   
   // readCustomStatus(servo);
-  std::cout << "Setting pos " << pos << "\n";
+  std::cout << "2. Setting pos " << std::dec << pos << "\n";
   servo.setPosition(pos, 1);
 
-  readCustomStatus(servo);
-  std::this_thread::sleep_for(50ms);
+  // readCustomStatus(servo);
+  std::this_thread::sleep_for(10ms);
 
-  pos += 53;
+  pos += 23;
 }
 
 void testWrite()
@@ -394,6 +379,12 @@ int main()
     // testRoundtrip();
     // testWrite();
     // readLoop();
-    setPos();
+    setPos(servo6);
+    setPos(servo12);
+    setPos(servo18);
+
+    setPos(servo5);
+    setPos(servo11);
+    setPos(servo17);
   }
 }
