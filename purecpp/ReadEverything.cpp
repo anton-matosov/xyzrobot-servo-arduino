@@ -332,7 +332,7 @@ void setPos(XYZrobotServo& servo)
 
     // readCustomStatus(servo);
     std::cout << "1. Setting pos " << std::dec << pos << "\n";
-    servo.setPosition(pos, 0);
+    servo.setPosition(pos, 100);
     
     // readCustomStatus(servo);
     std::this_thread::sleep_for(50ms);
@@ -340,12 +340,11 @@ void setPos(XYZrobotServo& servo)
   
   // readCustomStatus(servo);
   std::cout << "2. Setting pos " << std::dec << pos << "\n";
-  servo.setPosition(pos, 1);
+  servo.setPosition(pos, 30);
 
   // readCustomStatus(servo);
   std::this_thread::sleep_for(10ms);
 
-  pos += 23;
 }
 
 void testWrite()
@@ -386,5 +385,7 @@ int main()
     setPos(servo5);
     setPos(servo11);
     setPos(servo17);
+    
+    pos += 100;
   }
 }
