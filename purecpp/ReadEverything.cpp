@@ -10,7 +10,14 @@
 
 const uint8_t servoId = 5;
 
-UnixSerial servoSerial("/dev/cu.SLAB_USBtoUART");
+// UnixSerial servoSerial("/dev/cu.SLAB_USBtoUART");
+UnixSerial servoSerial("/dev/ttySC0"); // on Dr.QP raspi
+// UnixSerial servoSerial("/dev/ttySC1"); // extra one on Dr.QP raspi
+
+// connection: &con00
+//   accepter: tcp,2000
+//   connector: serialdev,/dev/ttySC0,115200n81,local
+//   trace-both: '/var/log/trace-\p'
 
 XYZrobotServo servo(servoSerial, servoId);
 
@@ -393,7 +400,7 @@ int main()
   {
     // testRoundtrip();
     // testWrite();
-    // readLoop();
-    setPos();
+    readLoop();
+    // setPos();
   }
 }
