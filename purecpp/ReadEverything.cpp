@@ -3,6 +3,7 @@
 
 #include "XYZrobotServo.h"
 #include "UnixSerial.h"
+#include "TcpSerial.h"
 
 #include <iostream>
 #include <thread>
@@ -11,13 +12,14 @@
 const uint8_t servoId = 5;
 
 // UnixSerial servoSerial("/dev/cu.SLAB_USBtoUART");
-UnixSerial servoSerial("/dev/ttySC0"); // on Dr.QP raspi
+// UnixSerial servoSerial("/dev/ttySC0"); // on Dr.QP raspi
 // UnixSerial servoSerial("/dev/ttySC1"); // extra one on Dr.QP raspi
 
 // connection: &con00
 //   accepter: tcp,2000
 //   connector: serialdev,/dev/ttySC0,115200n81,local
 //   trace-both: '/var/log/trace-\p'
+TcpSerial servoSerial("192.168.1.136", 2022);
 
 XYZrobotServo servo(servoSerial, servoId);
 

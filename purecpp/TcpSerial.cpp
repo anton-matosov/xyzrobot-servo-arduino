@@ -39,8 +39,11 @@ size_t TcpSerial::write(const uint8_t *data, size_t size)
 
 bool TcpSerial::available()
 {
-  return true;
-    // return get_bytes_available(serial_) != 0;
+  boost::asio::socket_base::bytes_readable command(true);
+  socket_.io_control(command);
+  const std::size_t bytesReadable = command.get();
+
+  return bytesReadable != 0;
 }
 
 uint8_t TcpSerial::peek()
