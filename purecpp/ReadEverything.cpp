@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <thread>
+#include <cstdlib>
+#include <signal.h>
 // #define servoSerial Serial1
 
 const uint8_t servoId = 5;
@@ -15,11 +17,16 @@ const uint8_t servoId = 5;
 // UnixSerial servoSerial("/dev/ttySC0"); // on Dr.QP raspi
 // UnixSerial servoSerial("/dev/ttySC1"); // extra one on Dr.QP raspi
 
+// https://techtinkering.com/2013/04/02/connecting-to-a-remote-serial-port-over-tcpip/
 // connection: &con00
 //   accepter: tcp,2000
 //   connector: serialdev,/dev/ttySC0,115200n81,local
 //   trace-both: '/var/log/trace-\p'
 TcpSerial servoSerial("192.168.1.136", 2022);
+
+// OR
+// socat pty,link=$HOME/dev/ttyVSC0,waitslave tcp:192.168.1.136:2022
+// UnixSerial servoSerial("/Users/antonmatosov/dev/ttyVSC0"); // virtual port forward on macOS
 
 XYZrobotServo servo(servoSerial, servoId);
 
