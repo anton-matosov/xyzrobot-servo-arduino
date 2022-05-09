@@ -331,24 +331,28 @@ void setPos()
 {
   using namespace std::chrono_literals;
 
-  std::cout << "Setting pos " << pos << "\n";
   // readCustomStatus(servo);
   // readAndPrintStatus(servo);
-  servo.setPosition(pos, 0);
-  std::this_thread::sleep_for(std::chrono::milliseconds(playtime));
 
-  // std::cout << "After sleep for " << pos << "\n";
-  // CustomStatus48 status = readCustomStatus(servo);
-  // pos = status.posRef;
+  XYZrobotServoStatus status = servo.readStatus();
+  std::cout << "Current pos " << status.position << "\n";
+  pos = status.posRef;
+  if (abs(pos - (int)status.position) < 15)
+  {
+    pos += stepSize;
+    if (pos > MaxPosition) {
+      pos = MaxPosition;
+      stepSize = -stepSize;
+    } else if (pos < MinPosition) {
+      pos = MinPosition;
+      stepSize = -stepSize;
+    }
 
-  pos += stepSize;
-  if (pos > MaxPosition) {
-    pos = MaxPosition;
-    stepSize = -stepSize;
-  } else if (pos < MinPosition) {
-    pos = MinPosition;
-    stepSize = -stepSize;
+    std::cout << "Setting pos " << pos << "\n";
+    servo.setPosition(pos, 10);
   }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(playtime));
 }
 
 void testWrite()
