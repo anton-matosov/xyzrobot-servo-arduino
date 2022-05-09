@@ -346,14 +346,18 @@ void setPos()
   //   pos = MaxPosition;
   //   // readCustomStatus(servo);
   // }
-
-  // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  namespace chrono = std::chrono;
+  
+  auto startTime = std::chrono::high_resolution_clock::now();
   XYZrobotServoStatus status = servo.readStatus();
-  if (servo.getLastError())
+  auto endTime = std::chrono::high_resolution_clock::now();
+  std::cout << "servo.readStatus takes: " << chrono::duration_cast<chrono::microseconds>(endTime - startTime).count() << " microseconds\n";
+
+  if (int lastError = servo.getLastError())
   {
-    std::cerr << "error reading status: " << servo.getLastError() << std::endl;
+    std::cout << "error reading status: " << lastError << std::endl;
   }
-  // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  
 
   if (pos == MaxPosition) {
     pos = MinPosition;
