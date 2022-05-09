@@ -85,7 +85,7 @@ void readAndPrintStatus(XYZrobotServo & servo)
   }
 }
 
-void readCustomStatus(XYZrobotServo & servo)
+CustomStatus48 readCustomStatus(XYZrobotServo & servo)
 {
   CustomStatus48 status;
   const size_t statusSize = sizeof(CustomStatus48);
@@ -112,6 +112,8 @@ void readCustomStatus(XYZrobotServo & servo)
     std::cout << "  speedGoal: " << (int)status.speedGoal << "\n";
     std::cout << "  speedRef: " << (int)status.speedRef << "\n";
   }
+
+  return status;
 }
 
 void readAndPrintRAM(XYZrobotServo & servo)
@@ -303,8 +305,8 @@ void readAndPrintEEPROM(XYZrobotServo & servo)
 void readEverything(XYZrobotServo & servo)
 {
   readAndPrintStatus(servo);
-  readAndPrintRAM(servo);
-  readAndPrintEEPROM(servo);
+  // readAndPrintRAM(servo);
+  // readAndPrintEEPROM(servo);
 
   std::cout << "\n";
 }
@@ -313,63 +315,40 @@ void readLoop()
 {
   using namespace std::chrono_literals;
 
-  std::this_thread::sleep_for(2s);
+  std::this_thread::sleep_for(1s);
   readEverything(servo);
 }
 
 
-const uint8_t playtime = 75;
+const int MinPosition = 250;
+const int MaxPosition = 830;
 
-const int Min_Position = 23;
-const int Max_Position = 1000;
-
-int pos = 0; //(Max_Position - Min_Position) / 2;
+int pos = (MaxPosition - MinPosition) / 2;
+const int playtime = 30;
+int stepSize = (MaxPosition - MinPosition) / 10;
 
 void setPos()
 {
   using namespace std::chrono_literals;
 
-//   std::this_thread::sleep_for(2s);
-
-//  if (pos == Max_Position) {
-//    pos = Min_Position;
-//    servo.setPosition(pos, 0);
-//    delay(1000);
-//  } else {
-//    pos = Max_Position;
-//    servo.setPosition(pos, 0);
-//    delay(1000);
-//  }
-
-
-/////////////////////////////////////////////
-//  pos = rand() % Max_Position;
-//  Serial.print(F("\nSetting pos "));
-//  Serial.print(pos);
-//  servo.setPosition(pos, 5);
-//  delay(50);
-
-/////////////////////////////////////////////
-  if (pos > Max_Position) {
-    std::this_thread::sleep_for(200ms);
-    pos = Min_Position;
-
-    // readCustomStatus(servo);
-    std::cout << "Setting pos " << pos << "\n";
-    servo.setPosition(pos, 0);
-    
-    readCustomStatus(servo);
-    std::this_thread::sleep_for(1000ms);
-  }
-  
-  // readCustomStatus(servo);
   std::cout << "Setting pos " << pos << "\n";
-  servo.setPosition(pos, 1);
+  // readCustomStatus(servo);
+  // readAndPrintStatus(servo);
+  servo.setPosition(pos, 0);
+  std::this_thread::sleep_for(std::chrono::milliseconds(playtime));
 
-  readCustomStatus(servo);
-  std::this_thread::sleep_for(50ms);
+  // std::cout << "After sleep for " << pos << "\n";
+  // CustomStatus48 status = readCustomStatus(servo);
+  // pos = status.posRef;
 
-  pos += 53;
+  pos += stepSize;
+  if (pos > MaxPosition) {
+    pos = MaxPosition;
+    stepSize = -stepSize;
+  } else if (pos < MinPosition) {
+    pos = MinPosition;
+    stepSize = -stepSize;
+  }
 }
 
 void testWrite()
@@ -402,7 +381,7 @@ int main()
   {
     // testRoundtrip();
     // testWrite();
-    readLoop();
-    // setPos();
+    // readLoop();
+    setPos();
   }
 }
