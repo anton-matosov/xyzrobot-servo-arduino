@@ -100,7 +100,7 @@ size_t read_with_timeout(boost::asio::io_service &ioService, tcp::socket &sock,
                        const MutableBufferSequence &buffers) {
   std::optional<boost::system::error_code> timer_result;
   boost::asio::deadline_timer timer(ioService);
-  timer.expires_from_now(boost::posix_time::milliseconds(300));
+  timer.expires_from_now(boost::posix_time::milliseconds(50));
   timer.async_wait([&timer_result](const auto& ec) { timer_result = ec; });
 
   std::optional<boost::system::error_code> read_result;
