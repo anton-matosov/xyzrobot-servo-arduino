@@ -75,6 +75,15 @@ size_t UnixSerial::write(const uint8_t *data, size_t size)
     return boost::asio::write(serial_, boost::asio::buffer(data, size));
 }
 
+void UnixSerial::flushRead() {
+  size_t bytes = get_bytes_available(serial_);
+  if (bytes > 0) {
+    std::vector<uint8_t> buf;
+    buf.resize(bytes);
+    readBytes(&buf[0], bytes);
+  }
+}
+
 bool UnixSerial::available()
 {
     return get_bytes_available(serial_) != 0;
@@ -95,9 +104,9 @@ uint8_t UnixSerial::peek()
 
 uint8_t UnixSerial::read()
 {
-    if (!available()) {
-        return kNoData;
-    }
+    // if (!available()) {
+    //     return kNoData;
+    // }
     everRead_ = true;
     boost::asio::read(serial_, boost::asio::buffer(&lastRead_, 1));
     return lastRead_;

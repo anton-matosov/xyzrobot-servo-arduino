@@ -125,7 +125,7 @@ XYZrobotServoStatus XYZrobotServo::readStatus()
 
   XYZrobotServoStatus status;
   sendRequest(CMD_STAT, NULL, 0);
-  readAck(CMD_STAT, (uint8_t *)&status, 10);
+  readAck(CMD_STAT, (uint8_t *)&status, sizeof(XYZrobotServoStatus));
   return status;
 }
 
@@ -156,7 +156,8 @@ void XYZrobotServo::reboot()
 
 void XYZrobotServo::flushRead()
 {
-  while(stream->available()) { stream->read(); }
+  stream->flushRead();
+  // while(stream->available()) { stream->read(); }
 }
 
 void XYZrobotServo::sendRequest(uint8_t cmd,

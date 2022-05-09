@@ -37,6 +37,18 @@ size_t TcpSerial::write(const uint8_t *data, size_t size)
     return boost::asio::write(socket_, boost::asio::buffer(data, size));
 }
 
+void TcpSerial::flushRead() {
+  boost::asio::socket_base::bytes_readable command(true);
+  socket_.io_control(command);
+  const std::size_t bytesReadable = command.get();
+
+  if (bytesReadable > 0) {
+    std::vector<uint8_t> buf;
+    buf.resize(bytesReadable);
+    readBytes(&buf[0], bytesReadable);
+  }
+}
+
 bool TcpSerial::available()
 {
   boost::asio::socket_base::bytes_readable command(true);
@@ -61,9 +73,9 @@ uint8_t TcpSerial::peek()
 
 uint8_t TcpSerial::read()
 {
-    if (!available()) {
-        return kNoData;
-    }
+    // if (!available()) {
+    //     return kNoData;
+    // }
     everRead_ = true;
     boost::asio::read(socket_, boost::asio::buffer(&lastRead_, 1));
     return lastRead_;

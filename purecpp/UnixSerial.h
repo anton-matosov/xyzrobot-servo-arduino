@@ -13,6 +13,7 @@ public:
     void begin(const unsigned long baudRate, const uint8_t transferConfig) override;
     size_t write(uint8_t byte) override;
     bool available() override;
+    void flushRead() override;
     uint8_t peek() override;
     uint8_t read() override;
 
