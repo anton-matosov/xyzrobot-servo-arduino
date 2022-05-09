@@ -404,8 +404,18 @@ void testRoundtrip()
   std::cout << "read " << (int)byte << "\n";
 }
 
-int main()
-{
+void signal_callback_handler(int signum) {
+  std::cout << "Caught signal " << signum << std::endl;
+  std::exit(signum);
+}
+
+int main() {
+  std::atexit([](){
+    servo.torqueOff();
+  });
+  signal(SIGINT, signal_callback_handler);
+  signal(SIGHUP, signal_callback_handler);
+
   setup();
 
   servo.torqueOff();
