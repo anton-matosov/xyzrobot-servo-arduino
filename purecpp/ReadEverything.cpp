@@ -304,9 +304,10 @@ void readAndPrintEEPROM(XYZrobotServo & servo)
 
 void readEverything(XYZrobotServo & servo)
 {
-  readAndPrintStatus(servo);
+  // readAndPrintStatus(servo);
   // readAndPrintRAM(servo);
   // readAndPrintEEPROM(servo);
+  readCustomStatus(servo);
 
   std::cout << "\n";
 }
@@ -323,7 +324,7 @@ void readLoop()
 const int MinPosition = 250;
 const int MaxPosition = 830;
 
-int pos = (MaxPosition - MinPosition) / 2;
+// int pos = (MaxPosition - MinPosition) / 2;
 const int playtime = 30;
 int stepSize = (MaxPosition - MinPosition) / 10;
 
@@ -336,18 +337,21 @@ void setPos()
 
   XYZrobotServoStatus status = servo.readStatus();
   std::cout << "Current pos " << status.position << "\n";
-  pos = status.posRef;
-  if (abs(pos - (int)status.position) < 15)
-  {
-    pos += stepSize;
-    if (pos > MaxPosition) {
-      pos = MaxPosition;
-      stepSize = -stepSize;
-    } else if (pos < MinPosition) {
-      pos = MinPosition;
-      stepSize = -stepSize;
-    }
 
+  int pos = -1;
+  if ((status.position + 3) >= MaxPosition) {
+    pos = MinPosition;
+    readCustomStatus(servo);
+  } else if ((status.position - 3) <= MinPosition) {
+    pos = MaxPosition;
+    readCustomStatus(servo);
+  }
+  // if (status.posRef != MaxPosition && status.posRef != MinPosition) {
+  //   pos = MaxPosition;
+  // }
+
+  if (pos != -1)
+  {
     std::cout << "Setting pos " << pos << "\n";
     servo.setPosition(pos, 10);
   }
@@ -381,11 +385,12 @@ int main()
 {
   setup();
 
+  servo.torqueOff();
   for (;;)
   {
     // testRoundtrip();
     // testWrite();
-    // readLoop();
-    setPos();
+    readLoop();
+    // setPos();
   }
 }
