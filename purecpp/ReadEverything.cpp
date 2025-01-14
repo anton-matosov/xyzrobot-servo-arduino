@@ -395,9 +395,9 @@ void setPos(XYZrobotServo& servo)
 
 
   /////////////////////////////////////////////
-  if (pos > Max_Position) {
+  if (pos > MaxPosition) {
     std::this_thread::sleep_for(50ms);
-    pos = Min_Position;
+    pos = MinPosition;
 
     // readCustomStatus(servo);
     std::cout << "1. Setting pos " << std::dec << pos << "\n";
@@ -443,16 +443,25 @@ void signal_callback_handler(int signum) {
   std::exit(signum);
 }
 
+void torqueOffAll() {
+  servo6.torqueOff();
+  servo12.torqueOff();
+  servo18.torqueOff();
+  servo5.torqueOff();
+  servo11.torqueOff();
+  servo17.torqueOff();
+}
+
 int main() {
   std::atexit([](){
-    servo.torqueOff();
+    torqueOffAll();
   });
   signal(SIGINT, signal_callback_handler);
   signal(SIGHUP, signal_callback_handler);
 
   setup();
 
-  servo.torqueOff();
+  torqueOffAll();
   for (;;)
   {
     // testRoundtrip();

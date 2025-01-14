@@ -3,6 +3,7 @@
 #include <boost/asio/read.hpp>
 #include <iostream>
 #include <vector>
+#include <optional>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 

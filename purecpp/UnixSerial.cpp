@@ -101,15 +101,6 @@ void UnixSerial::flushRead() {
   }
 }
 
-void UnixSerial::flushRead() {
-  size_t bytes = get_bytes_available(serial_);
-  if (bytes > 0) {
-    std::vector<uint8_t> buf;
-    buf.resize(bytes);
-    readBytes(&buf[0], bytes);
-  }
-}
-
 bool UnixSerial::available()
 {
     return get_bytes_available(impl_->serial_) != 0;
