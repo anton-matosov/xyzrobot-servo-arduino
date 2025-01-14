@@ -11,7 +11,6 @@
 #include <signal.h>
 // #define servoSerial Serial1
 
-const uint8_t servoId = 5;
 
 // UnixSerial servoSerial("/dev/cu.SLAB_USBtoUART");
 UnixSerial servoSerial("/dev/ttySC0"); // on Dr.QP raspi
@@ -28,7 +27,13 @@ UnixSerial servoSerial("/dev/ttySC0"); // on Dr.QP raspi
 // socat pty,link=$HOME/dev/ttyVSC0,waitslave tcp:192.168.1.136:2022
 // UnixSerial servoSerial("/Users/antonmatosov/dev/ttyVSC0"); // virtual port forward on macOS
 
-XYZrobotServo servo(servoSerial, servoId);
+XYZrobotServo servo6(servoSerial, 6);
+XYZrobotServo servo12(servoSerial, 12);
+XYZrobotServo servo18(servoSerial, 18);
+
+XYZrobotServo servo5(servoSerial, 5);
+XYZrobotServo servo11(servoSerial, 11);
+XYZrobotServo servo17(servoSerial, 17);
 
 void setup()
 {
@@ -319,7 +324,7 @@ void readEverything(XYZrobotServo & servo)
   std::cout << "\n";
 }
 
-void readLoop()
+void readLoop(XYZrobotServo& servo)
 {
   using namespace std::chrono_literals;
 
@@ -335,7 +340,7 @@ int pos = (MaxPosition - MinPosition) / 2;
 const int playtime = 200;
 int stepSize = (MaxPosition - MinPosition) / 10;
 
-void setPos()
+void setPos(XYZrobotServo& servo)
 {
   using namespace std::chrono_literals;
 
@@ -353,33 +358,62 @@ void setPos()
   //   pos = MaxPosition;
   //   // readCustomStatus(servo);
   // }
-  namespace chrono = std::chrono;
-  
-  auto startTime = std::chrono::high_resolution_clock::now();
-  XYZrobotServoStatus status = servo.readStatus();
-  auto endTime = std::chrono::high_resolution_clock::now();
-  std::cout << "servo.readStatus takes: " << chrono::duration_cast<chrono::microseconds>(endTime - startTime).count() << " microseconds\n";
 
-  if (int lastError = servo.getLastError())
+  ////////////////////////////////////////////////////////////////
+  ////// Time it takes to read status
+  if (false)
   {
-    std::cout << "error reading status: " << lastError << std::endl;
+    namespace chrono = std::chrono;
+    
+    auto startTime = std::chrono::high_resolution_clock::now();
+    XYZrobotServoStatus status = servo.readStatus();
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::cout << "servo.readStatus takes: " << chrono::duration_cast<chrono::microseconds>(endTime - startTime).count() << " microseconds\n";
+
+    if (int lastError = servo.getLastError())
+    {
+      std::cout << "error reading status: " << lastError << std::endl;
+    }
+    
+
+    if (pos == MaxPosition) {
+      pos = MinPosition;
+    // } else if (pos == MinPosition) {
+    } else {
+      pos = MaxPosition;
+    }
+
+    if (pos != -1)
+    {
+      std::cout << "Setting pos " << pos << "\n";
+      servo.setPosition(pos, 0);
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(playtime));
+  }
+  ////////////////////////////////////////////////////////////////
+
+
+  /////////////////////////////////////////////
+  if (pos > Max_Position) {
+    std::this_thread::sleep_for(50ms);
+    pos = Min_Position;
+
+    // readCustomStatus(servo);
+    std::cout << "1. Setting pos " << std::dec << pos << "\n";
+    servo.setPosition(pos, 100);
+    
+    // readCustomStatus(servo);
+    std::this_thread::sleep_for(50ms);
   }
   
+  // readCustomStatus(servo);
+  std::cout << "2. Setting pos " << std::dec << pos << "\n";
+  servo.setPosition(pos, 30);
 
-  if (pos == MaxPosition) {
-    pos = MinPosition;
-  // } else if (pos == MinPosition) {
-  } else {
-    pos = MaxPosition;
-  }
+  // readCustomStatus(servo);
+  std::this_thread::sleep_for(10ms);
 
-  if (pos != -1)
-  {
-    std::cout << "Setting pos " << pos << "\n";
-    servo.setPosition(pos, 0);
-  }
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(playtime));
 }
 
 void testWrite()
@@ -424,6 +458,14 @@ int main() {
     // testRoundtrip();
     // testWrite();
     // readLoop();
-    setPos();
+    setPos(servo6);
+    setPos(servo12);
+    setPos(servo18);
+
+    setPos(servo5);
+    setPos(servo11);
+    setPos(servo17);
+    
+    pos += 100;
   }
 }
